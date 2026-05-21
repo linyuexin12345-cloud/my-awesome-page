@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartOps | IT运维与行政协同看板</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --bg: #ecf0f1;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--bg); color: var(--primary); }
+        .header { background: var(--primary); color: white; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        
+        /* 卡片布局 */
+        .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .card h3 { margin-top: 0; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
+        
+        /* 网格布局 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        
+        /* 按钮样式 */
+        .btn { background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; transition: 0.3s; }
+        .btn:hover { opacity: 0.9; }
+        .btn-danger { background: var(--danger); }
+        .btn-success { background: var(--success); }
+
+        /* 列表样式 */
+        ul { list-style-type: none; padding: 0; max-height: 300px; overflow-y: auto; }
+        li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .tag { font-size: 12px; padding: 3px 8px; border-radius: 12px; color: white; }
+        .tag-it { background: #e67e22; }
+        .tag-admin { background: #9b59b6; }
+        .tag-auto { background: var(--success); }
+
+        /* 统计数字 */
+        .stat-box { text-align: center; padding: 20px; background: linear-gradient(135deg, #3498db, #2c3e50); color: white; border-radius: 8px; }
+        .stat-number { font-size: 36px; font-weight: bold; }
+        .stat-label { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🚀 SmartOps 智能协同看板</h1>
+    <p>模拟 AI 驱动的 IT 运维与行政管理降本增效工具</p>
+</div>
+
+<div class="container">
+    <!-- 统计区 -->
+    <div class="grid">
+        <div class="stat-box">
+            <div class="stat-number" id="stat-total">0</div>
+            <div class="stat-label">累计处理工单</div>
+        </div>
+        <div class="stat-box" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+            <div class="stat-number" id="stat-auto">0</div>
+            <div class="stat-label">AI 自动处理率</div>
+        </div>
+        <div class="stat-box" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+            <div class="stat-number" id="stat-cost">0</div>
+            <div class="stat-label">节省工时 (小时)</div>
+        </div>
+    </div>
+
+    <!-- 功能区 -->
+    <div class="grid">
+        <!-- 左侧：模拟AI生成工单 -->
+        <div class="card">
+            <h3>🛠️ 智能工单生成 (模拟 AI 解析)</h3>
+            <p>点击下方按钮，模拟员工发送自然语言请求，AI 自动解析并生成工单。</p>
+            <button class="btn" onclick="generateTicket()">✨ 模拟员工发起请求</button>
+            <ul id="ticket-list" style="margin-top:15px;"></ul>
+        </div>
+
+        <!-- 右侧：智能告警降噪 -->
+        <div class="card">
+            <h3>📉 智能告警降噪 (模拟 AIOps)</h3>
+            <p>模拟服务器产生海量告警，AI 自动聚合为真实故障事件。</p>
+            <button class="btn btn-danger" onclick="generateAlert()">⚡ 模拟服务器故障风暴</button>
+            <ul id="alert-list" style="margin-top:15px;"></ul>
+        </div>
+    </div>
+
+    <!-- 底部：资产对账 -->
+    <div class="card">
+        <h3>💰 闲置资产盘活 (模拟数据对账)</h3>
+        <p>AI 扫描全公司资产，自动识别行政与 IT 系统中的闲置设备。</p>
+        <button class="btn btn-success" onclick="checkAssets()">🔍 执行 AI 资产盘点</button>
+        <div id="asset-result" style="margin-top:15px; font-weight:bold;"></div>
+    </div>
+</div>
+
+<script>
+    // 初始化数据
+    let tickets = JSON.parse(localStorage.getItem('smartops_tickets')) || [];
+    let alerts = JSON.parse(localStorage.getItem('smartops_alerts')) || [];
+    let stats = JSON.parse(localStorage.getItem('smartops_stats')) || { total: 0, auto: 0, cost: 0 };
+
+    // 模拟数据库
+    const itRequests = [
+        { user: "张三", text: "我的VPN连不上了，急需在家加班", type: "IT-网络", auto: true },
+        { user: "李四", text: "申请一台4核8G的测试服务器用于新项目", type: "IT-资源", auto: false },
+        { user: "王五", text: "办公室空调太冷了，能不能修一下", type: "行政-物业", auto: true },
+        { user: "赵六", text: "打印机卡纸了，急用！", type: "行政-办公", auto: true }
+    ];
+
+    const alertStorms = [
+        { source: "核心交换机 SW-01", count: 150, reason: "链路震荡 (AI聚合为1个事件)" },
+        { source: "数据库 DB-Master", count: 400, reason: "连接池耗尽 (AI聚合为1个事件)" }
+    ];
+
+    // 渲染函数
+    function render() {
+        // 渲染工单
+        const ticketList = document.getElementById('ticket-list');
+        ticketList.innerHTML = '';
+        tickets.slice(-5).reverse().forEach(t => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span><strong>${t.user}</strong>: ${t.text} <br><small>${new Date(t.time).toLocaleTimeString()}</small></span> 
+                            <span class="tag ${t.type.includes('IT') ? 'tag-it' : 'tag-admin'}">${t.type}</span>`;
+            ticketList.appendChild(li);
+        });
+
+        // 渲染告警
+        const alertList = document.getElementById('alert-list');
+        alertList.innerHTML = '';
+        alerts.slice(-5).reverse().forEach(a => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span><strong>${a.source}</strong>: ${a.reason}</span> <span class="tag tag-auto">AI聚合</span>`;
+            alertList.appendChild(li);
+        });
+
+        // 渲染统计
+        document.getElementById('stat-total').innerText = stats.total;
+        document.getElementById('stat-auto').innerText = stats.total > 0 ? Math.round((stats.auto / stats.total) * 100) + '%' : '0%';
+        document.getElementById('stat-cost').innerText = stats.cost;
+    }
+
+    // 模拟生成工单
+    function generateTicket() {
+        const req = itRequests[Math.floor(Math.random() * itRequests.length)];
+        const newTicket = { ...req, time: Date.now() };
+        tickets.push(newTicket);
+        localStorage.setItem('smartops_tickets', JSON.stringify(tickets));
+        
+        stats.total++;
+        if(req.auto) stats.auto++;
+        stats.cost += 0.5; // 模拟节省0.5小时
+        localStorage.setItem('smartops_stats', JSON.stringify(stats));
+        render();
+    }
+
+    // 模拟生成告警
+    function generateAlert() {
+        const storm = alertStorms[Math.floor(Math.random() * alertStorms.length)];
+        alerts.push({ ...storm, time: Date.now() });
+        localStorage.setItem('smartops_alerts', JSON.stringify(alerts));
+        render();
+    }
+
+    // 模拟资产对账
+    function checkAssets() {
+        const idleAssets = ['闲置笔记本 x3 (行政)', '报废显示器 x2 (IT)', '空置工位 x5 (行政)'];
+        const found = idleAssets[Math.floor(Math.random() * idleAssets.length)];
+        document.getElementById('asset-result').innerHTML = `✅ AI 检测到: ${found}，预计节省采购预算 ¥5,000。`;
+    }
+
+    // 初始加载
+    window.onload = render;
+</script>
+
+</body>
+</html>
