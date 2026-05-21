@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>客服外包供应商降价谈判汇报</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+      background: #f0f4f8;
+      color: #1a2332;
+      padding: 24px 20px;
+    }
+
+    @page { size: landscape; margin: 0; }
+
+    .page {
+      max-width: 1340px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #1a3a5c 0%, #0e6ba8 60%, #0dafff 100%);
+      padding: 16px 36px 12px;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+    .header h1 {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .header .subtitle {
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+    }
+
+    /* ── 上半区：KPI + 供应商汇总 + 总结 ── */
+    .top-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    /* ── Section ── */
+    .section {
+      padding: 16px 24px;
+      border-right: 1px solid #eef2f7;
+    }
+    .section:last-child { border-right: none; }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0e6ba8;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title::before {
+      content: '';
+      display: block;
+      width: 3px;
+      height: 12px;
+      background: linear-gradient(180deg, #0dafff, #0e6ba8);
+      border-radius: 2px;
+    }
+
+    /* ── KPI Cards ── */
+    .kpi-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .kpi-card {
+      background: linear-gradient(135deg, #f7fbff, #eaf4fe);
+      border: 1px solid #cde5f9;
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kpi-card.highlight {
+      background: linear-gradient(135deg, #1a3a5c, #0e6ba8);
+      border: none;
+      color: #fff;
+    }
+    .kpi-label {
+      font-size: 11px;
+      color: #6b8ba4;
+    }
+    .kpi-card.highlight .kpi-label { color: rgba(255,255,255,0.7); }
+    .kpi-right { text-align: right; }
+    .kpi-value {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0e6ba8;
+      line-height: 1;
+    }
+    .kpi-card.highlight .kpi-value { color: #5fd3ff; }
+    .kpi-sub {
+      font-size: 10px;
+      color: #8aa8bf;
+      margin-top: 2px;
+    }
+    .kpi-card.highlight .kpi-sub { color: rgba(255,255,255,0.6); }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    thead tr {
+      background: #1a3a5c;
+      color: #fff;
+    }
+    thead th {
+      padding: 6px 6px;
+      text-align: center;
+      font-weight: 600;
+      white-space: nowrap;
+      font-size: 10px;
+    }
+    tbody tr:nth-child(even) { background: #f6fafd; }
+    tbody td {
+      padding: 5px 6px;
+      text-align: center;
+      color: #2c3e50;
+      border-bottom: 1px solid #ecf0f5;
+      font-size: 11px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .badge-blue { background: #e8f4ff; color: #0e6ba8; }
+    .badge-green { background: #eefbf3; color: #1a9b55; }
+    tfoot tr {
+      background: #1a3a5c;
+      color: #fff;
+    }
+    tfoot td {
+      padding: 6px 6px;
+      font-weight: 700;
+      border-bottom: none;
+      color: #fff;
+      font-size: 11px;
+    }
+    .save-value { color: #5fd3ff; font-weight: 800; }
+
+    /* ── 降幅 Bar ── */
+    .bar-wrap { display: flex; align-items: center; gap: 4px; justify-content: center; }
+    .bar-track { background: #e0ecf8; border-radius: 3px; height: 5px; width: 40px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #0dafff, #0e6ba8); }
+    .bar-pct { font-weight: 700; color: #0e6ba8; font-size: 10px; min-width: 30px; }
+
+    /* ── Summary ── */
+    .summary-box {
+      background: linear-gradient(135deg, #f0f9ff, #e5f3fc);
+      border-left: 3px solid #0dafff;
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      font-size: 12px;
+      line-height: 1.8;
+      color: #2c3e50;
+    }
+    .summary-box strong { color: #0e6ba8; }
+    .highlight-num { color: #e84c4c; font-weight: 700; }
+    .highlight-save { color: #0e6ba8; font-weight: 700; }
+
+    /* ── 降价明细区（全宽） ── */
+    .bottom-row {
+      padding: 16px 24px;
+      border-top: 1px solid #eef2f7;
+    }
+    .detail-table th {
+      padding: 7px 8px;
+      font-size: 11px;
+    }
+    .detail-table td {
+      padding: 6px 8px;
+      font-size: 11px;
+    }
+    .detail-table .bar-track { width: 48px; height: 6px; }
+    .detail-table .bar-pct { font-size: 11px; min-width: 34px; }
+
+    /* ── Footer ── */
+    .footer {
+      background: #f7fbff;
+      padding: 8px 24px;
+      font-size: 10px;
+      color: #93a8bc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #eef2f7;
+    }
+
+    .note {
+      font-size: 10px;
+      color: #93a8bc;
+      margin-top: 6px;
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .page { box-shadow: none; border-radius: 0; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>客服外包供应商降价谈判汇报</h1>
+    <span class="subtitle">客户服务部</span>
+  </div>
+
+  <!-- 上半区：三列并排 -->
+  <div class="top-row">
+
+    <!-- 一、核心成果总览 -->
+    <div class="section">
+      <div class="section-title">一、核心成果总览</div>
+      <div class="kpi-grid">
+        <div class="kpi-card highlight">
+          <div class="kpi-label">全年预估节省费用</div>
+          <div class="kpi-right">
+            <div class="kpi-value">¥100.6万</div>
+            <div class="kpi-sub">≈ USD 143,738 / 年</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">月度预估节省费用</div>
+          <div class="kpi-right">
+            <div class="kpi-value">¥8.38万</div>
+            <div class="kpi-sub">≈ USD 1.20万 / 月</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">降价覆盖人数</div>
+          <div class="kpi-right">
+            <div class="kpi-value">210 人</div>
+            <div class="kpi-sub">Callnovo 78 + Hopla 132</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 三、供应商维度汇总 -->
+    <div class="section">
+      <div class="section-title">三、供应商维度汇总</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>供应商</th>
+              <th>服务模式</th>
+              <th>人数</th>
+              <th>类别数</th>
+              <th>降幅区间</th>
+              <th>月省（CNY）</th>
+              <th>年省（CNY）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-blue">Callnovo</span></td>
+              <td>驻场</td>
+              <td>78</td>
+              <td>3 类</td>
+              <td><span class="highlight-num">3.7%~11.3%</span></td>
+              <td>¥4.04万</td>
+              <td class="save-value">¥48.53万</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">Hopla</span></td>
+              <td>远程（菲律宾）</td>
+              <td>132</td>
+              <td>1 类</td>
+              <td><span class="highlight-num">5.7%</span></td>
+              <td>¥4.34万</td>
+              <td class="save-value">¥52.09万</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">合计</td>
+              <td>210</td>
+              <td>4 类</td>
+              <td>—</td>
+              <td>¥8.38万</td>
+              <td class="save-value">¥100.62万</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- 四、谈判成果总结 -->
+    <div class="section">
+      <div class="section-title">四、谈判成果总结</div>
+      <div class="summary-box">
+        本次谈判涉及 <strong>2 家供应商</strong>（Callnovo、Hopla），在岗人员 <strong class="highlight-num">210 人</strong>。<br>
+        各类别每小时单价降幅 <strong class="highlight-num">3.7% ～ 11.3%</strong>；<br>
+        月省 <strong class="highlight-save">¥8.38万</strong>（≈ USD 1.20万），<br>
+        <strong>全年预估节省 <span class="highlight-num">¥100.6 万</span></strong>（≈ USD 143,738）。<br>
+        Hopla 因人数多（132人）贡献约 <strong>51.8%</strong> 节省额；Callnovo WhatsApp 组降幅最高（11.3%）。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 降价明细（全宽） -->
+  <div class="bottom-row">
+    <div class="section-title">二、降价明细</div>
+    <div class="table-wrap">
+      <table class="detail-table">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>供应商</th>
+            <th>地点 / 模式</th>
+            <th>语种</th>
+            <th>服务类型</th>
+            <th>对应组别</th>
+            <th>降价前（$/小时）</th>
+            <th>降价后（$/小时）</th>
+            <th>降幅</th>
+            <th>在岗人数</th>
+            <th>月均节省（USD）</th>
+            <th>月均节省（CNY）</th>
+            <th>全年节省（CNY）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><span class="badge badge-blue">Callnovo</span></td>
+            <td>Bolivia / 驻场</td>
+            <td>Spanish</td>
+            <td>Voice</td>
+            <td>热线组</td>
+            <td>$5.30</td>
+            <td><strong>$4.80</strong></td>
+            <td>
+              <div class="bar-wrap">
+                <div class="bar-track"><div class="bar-fill" style="width:94%"></div></div>
+                <span class="bar-pct">9.4%</span>
+              </div>
+            </td>
+            <td>32</td>
+            <td>$0.28万</td>
+            <td>¥1.95万</td>
+            <td class="save-value">¥23.39万</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><span class="badge badge-blue">Callnovo</span></td>
+            <td>Bolivia / 驻场</td>
+            <td>Spanish &amp; English</td>
+            <td>Voice</td>
+            <td>热线组</td>
+            <td>$5.40</td>
+            <td><strong>$5.20</strong></td>
+            <td>
+              <div class="bar-wrap">
+                <div class="bar-track"><div class="bar-fill" style="width:37%"></div></div>
+                <span class="bar-pct">3.7%</span>
+              </div>
+            </td>
+            <td>26</td>
+            <td>$0.09万</td>
+            <td>¥0.63万</td>
+            <td class="save-value">¥7.60万</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><span class="badge badge-blue">Callnovo</span></td>
+            <td>Bolivia / 驻场</td>
+            <td>Spanish &amp; English</td>
+            <td>Non-Voice</td>
+            <td>WhatsApp</td>
+            <td>$5.30</td>
+            <td><strong>$4.70</strong></td>
+            <td>
+              <div class="bar-wrap">
+                <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+                <span class="bar-pct">11.3%</span>
+              </div>
+            </td>
+            <td>20</td>
+            <td>$0.21万</td>
+            <td>¥1.46万</td>
+            <td class="save-value">¥17.54万</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><span class="badge badge-green">Hopla</span></td>
+            <td>菲律宾 / 远程</td>
+            <td>English</td>
+            <td>Voice</td>
+            <td>热线组</td>
+            <td>$4.72</td>
+            <td><strong>$4.45</strong></td>
+            <td>
+              <div class="bar-wrap">
+                <div class="bar-track"><div class="bar-fill" style="width:57%"></div></div>
+                <span class="bar-pct">5.7%</span>
+              </div>
+            </td>
+            <td>132</td>
+            <td>$0.62万</td>
+            <td>¥4.34万</td>
+            <td class="save-value">¥52.09万</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="9" style="text-align:right;">合 计</td>
+            <td>210</td>
+            <td>$1.20万</td>
+            <td>¥8.38万</td>
+            <td class="save-value" style="font-size:12px;">¥100.62万</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="note">* 月成本基准：21.75工作日 × 8小时；汇率 1 USD ≈ 7 CNY；全年按12个月测算。</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>客户服务部</span>
+    <span>数据来源：客服供应商降价汇总.xlsx · 汇率参考：1 USD ≈ 7 CNY</span>
+  </div>
+
+</div>
+</body>
+</html>
